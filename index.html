@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FocusFlow Daily Planner</title>
+    <link rel="stylesheet" href="style.css">
+    <!-- Подключаем шрифт DM Sans из Google Fonts -->
+    <link href="fonts.googleapis.com" rel="stylesheet">
+    <link rel="manifest" href="/manifest.json">
+</head>
+<body>
+    <div class="container">
+        <h1>FocusFlow Planner</h1>
+        
+        <div class="input-area">
+            <input type="text" id="taskInput" placeholder="Введите новую задачу...">
+            <select id="taskCategory">
+                <option value="personal">Личное</option>
+                <option value="work">Работа</option>
+                <option value="health">Здоровье</option>
+            </select>
+            <button id="addButton">Добавить</button>
+        </div>
+
+        <ul id="taskList">
+            <!-- Задачи будут динамически добавлены сюда через JS -->
+        </ul>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
