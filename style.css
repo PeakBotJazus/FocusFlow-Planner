@@ -1,5 +1,4 @@
 body {
-    /* Меняем шрифт на DM Sans */
     font-family: 'DM Sans', sans-serif; 
     background: #121212; 
     margin: 0;
@@ -8,51 +7,53 @@ body {
     justify-content: center;
     align-items: flex-start;
     min-height: 100vh;
-    padding-top: 40px;
+    padding-top: 20px; /* Уменьшен отступ сверху для мобильных */
     color: #e0e0e0; 
 }
 
 .container {
     background: #1e1e1e; 
-    padding: 30px;
-    border-radius: 10px;
-    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5); 
-    width: 100%;
-    max-width: 500px;
+    /* Убрано ограничение max-width */
+    width: 100%; 
+    padding: 20px; /* Добавлены отступы по бокам */
+    box-shadow: 0 0 0 rgba(0, 0, 0, 0.5); /* Убрана тень, чтобы выглядело как нативное приложение */
+    border-radius: 0; /* Убраны закругления для заполнения всего экрана */
+    min-height: 100vh; /* Занимает всю высоту экрана */
 }
 
 h1 {
     text-align: center;
     color: #ffffff;
     margin-bottom: 20px;
+    font-size: 24px; /* Оптимизация размера заголовка под мобильные */
 }
 
 .input-area {
     display: flex;
     gap: 10px;
     margin-bottom: 20px;
+    flex-wrap: wrap; /* Разрешаем элементам переноситься на новую строку при необходимости */
 }
 
 #taskInput {
     flex-grow: 1;
-    padding: 10px;
+    padding: 12px; /* Чуть больше паддинга для удобного нажатия пальцем */
     background: #333; 
     border: 1px solid #555;
     border-radius: 5px;
     font-size: 16px;
     color: #fff;
-    /* Применяем шрифт и сюда */
     font-family: 'DM Sans', sans-serif; 
 }
 
 #taskCategory {
-    padding: 10px;
+    padding: 12px;
     background: #333; 
     border: 1px solid #555;
     border-radius: 5px;
     color: #fff;
-    /* Применяем шрифт и сюда */
     font-family: 'DM Sans', sans-serif; 
+    min-width: 120px; /* Фиксированная минимальная ширина для селекта */
 }
 
 #addButton {
@@ -63,9 +64,23 @@ h1 {
     border-radius: 5px;
     cursor: pointer;
     transition: background 0.3s;
-    /* Применяем шрифт и сюда */
     font-family: 'DM Sans', sans-serif; 
+    /* На маленьких экранах кнопка может занимать всю ширину */
+    width: 100%; 
+    margin-top: 10px;
 }
+
+/* Медиа-запрос для экранов побольше, чтобы кнопка вернулась на место */
+@media (min-width: 400px) {
+    #addButton {
+        width: auto;
+        margin-top: 0;
+    }
+    #taskInput {
+         flex-grow: 1;
+    }
+}
+
 
 #addButton:hover {
     background: #0056b3;
@@ -88,9 +103,10 @@ h1 {
     transition: background 0.3s;
 }
 
-.task-item.personal { border-left-color: #f87153; }
-.task-item.work { border-left-color: #3d9bff; }
-.task-item.health { border-left-color: #44c763; }
+/* Цветовые схемы для категорий остаются яркими для контраста */
+.task-item.personal { border-left-color: #ff5733; } 
+.task-item.work { border-left-color: #007bff; }     
+.task-item.health { border-left-color: #28a745; }   
 
 
 .task-text {
@@ -98,6 +114,7 @@ h1 {
     margin-right: 15px;
     cursor: pointer;
     color: #e0e0e0; 
+    word-break: break-word; /* Позволяет длинным словам переноситься */
 }
 
 .task-item.completed .task-text {
@@ -106,13 +123,14 @@ h1 {
 }
 
 .delete-btn {
-    background: #72282f;
+    background: #dc3545;
     color: white;
     border: none;
-    padding: 5px 10px;
+    padding: 8px 12px; /* Увеличен размер кнопки для удобного нажатия */
     border-radius: 4px;
     cursor: pointer;
     font-size: 14px;
-    /* Применяем шрифт и сюда */
     font-family: 'DM Sans', sans-serif; 
+    /* Делаем кнопку удаления не сжимаемой */
+    flex-shrink: 0; 
 }
