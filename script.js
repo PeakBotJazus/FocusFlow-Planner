@@ -1,11 +1,11 @@
 document.addEventListener('DOMContentLoaded', () => {
+     const categoryModal = document.getElementById('categoryModal');
+    const closeModal = document.querySelector('.close');
     const taskInput = document.getElementById('taskInput');
     const taskCategorySelect = document.getElementById('taskCategory');
     const addButton = document.getElementById('addButton');
     const taskList = document.getElementById('taskList');
     const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
-    const categoryModal = document.getElementById('categoryModal');
-    const closeModal = document.querySelector('.close');
     const addCategoryBtn = document.getElementById('addCategoryBtn');
     const newCategoryNameInput = document.getElementById('newCategoryName');
     const newCategoryColorInput = document.getElementById('newCategoryColor');
@@ -169,19 +169,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // --- Обработчики событий модального окна ---
 
-    manageCategoriesBtn.addEventListener('click', () => {
+     manageCategoriesBtn.addEventListener('click', () => {
         categoryModal.style.display = 'block';
-        renderCategoryManagementList(); // Показываем актуальный список при открытии
+        document.body.classList.add('modal-open'); // Добавляем класс, запрещающий скролл
+        renderCategoryManagementList();
     });
 
     closeModal.addEventListener('click', () => {
         categoryModal.style.display = 'none';
-        renderTasks(); // Перерисовываем задачи на случай, если категории изменились
+        document.body.classList.remove('modal-open'); // Удаляем класс, разрешаем скролл
+        renderTasks();
     });
 
     window.addEventListener('click', (event) => {
         if (event.target === categoryModal) {
             categoryModal.style.display = 'none';
+            document.body.classList.remove('modal-open'); // Удаляем класс
             renderTasks();
         }
     });

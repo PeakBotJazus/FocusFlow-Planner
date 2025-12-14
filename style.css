@@ -207,3 +207,8 @@ h1 {
     cursor: pointer;
     font-size: 12px;
 }
+
+.modal-open {
+    overflow: hidden; 
+    height: 100vh; 
+}
