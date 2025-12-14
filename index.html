@@ -5,9 +5,12 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>FocusFlow Daily Planner</title>
     <link rel="stylesheet" href="style.css">
-    <!-- Подключаем шрифт DM Sans из Google Fonts -->
     <link href="fonts.googleapis.com" rel="stylesheet">
     <link rel="manifest" href="/manifest.json">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black">
+    <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+    <meta name="theme-color" content="#1e1e1e">
 </head>
 <body>
     <div class="container">
@@ -16,16 +19,31 @@
         <div class="input-area">
             <input type="text" id="taskInput" placeholder="Введите новую задачу...">
             <select id="taskCategory">
-                <option value="personal">Личное</option>
-                <option value="work">Работа</option>
-                <option value="health">Здоровье</option>
+                <!-- Опции будут добавлены через JS -->
             </select>
             <button id="addButton">Добавить</button>
+            <button id="manageCategoriesBtn" title="Управление категориями">⚙️</button>
         </div>
 
         <ul id="taskList">
             <!-- Задачи будут динамически добавлены сюда через JS -->
         </ul>
+    </div>
+
+    <!-- Модальное окно управления категориями -->
+    <div id="categoryModal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <h2>Управление категориями</h2>
+            <div class="category-input-area">
+                <input type="text" id="newCategoryName" placeholder="Название категории...">
+                <input type="color" id="newCategoryColor" value="#ffffff">
+                <button id="addCategoryBtn">Добавить</button>
+            </div>
+            <ul id="categoryList">
+                <!-- Список категорий здесь -->
+            </ul>
+        </div>
     </div>
 
     <script src="script.js"></script>

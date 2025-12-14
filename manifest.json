@@ -1,7 +1,7 @@
 {
-  "name": "FocusFlow Planner",
-  "short_name": "Planner",
-  "description": "Мой ежедневный планировщик задач",
+  "name": "FocusFlow Daily Planner",
+  "short_name": "Planner App",
+  "description": "Мой удобный планировщик задач",
   "start_url": "/index.html",
   "display": "standalone",
   "background_color": "#1e1e1e",
