@@ -4,17 +4,17 @@ document.addEventListener('DOMContentLoaded', () => {
     const addButton = document.getElementById('addButton');
     const taskList = document.getElementById('taskList');
     const STORAGE_KEY = 'focusFlowTasks';
+    const LONG_PRESS_DURATION = 800; // 800 миллисекунд для долгого нажатия
 
     let tasks = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+    let pressTimer;
 
-    // Функция сохранения задач в localStorage
     function saveTasks() {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(tasks));
     }
 
-    // Функция рендера (отображения) задач
     function renderTasks() {
-        taskList.innerHTML = ''; // Очищаем список перед повторным рендером
+        taskList.innerHTML = '';
         tasks.forEach((task, index) => {
             const li = document.createElement('li');
             li.classList.add('task-item', task.category);
@@ -22,61 +22,84 @@ document.addEventListener('DOMContentLoaded', () => {
                 li.classList.add('completed');
             }
 
-            // Текст задачи
             const taskText = document.createElement('span');
             taskText.classList.add('task-text');
             taskText.textContent = task.text;
             taskText.addEventListener('click', () => toggleComplete(index));
 
-            // Кнопка удаления
-            const deleteBtn = document.createElement('button');
-            deleteBtn.classList.add('delete-btn');
-            deleteBtn.textContent = 'Удалить';
-            deleteBtn.addEventListener('click', () => deleteTask(index));
+            // --- ОБРАБОТЧИКИ ДОЛГОГО НАЖАТИЯ ---
+
+            // Для десктопа (правая кнопка мыши)
+            li.addEventListener('contextmenu', (e) => {
+                e.preventDefault(); // Предотвращаем стандартное меню браузера
+                deleteTask(index);
+            });
+
+            // Для мобильных устройств (сенсорный экран)
+            li.addEventListener('touchstart', (e) => {
+                // Запускаем таймер при касании
+                pressTimer = setTimeout(() => {
+                    // Если таймер сработал (пользователь держал палец долго)
+                    deleteTask(index);
+                    // Опционально: можно добавить виброотклик, если это PWA с доступом к API
+                    if (navigator.vibrate) {
+                        navigator.vibrate(50); 
+                    }
+                }, LONG_PRESS_DURATION);
+            });
+
+            li.addEventListener('touchend', () => {
+                // Если палец отпущен до истечения таймера, отменяем удаление
+                clearTimeout(pressTimer);
+            });
+
+            li.addEventListener('touchcancel', () => {
+                // Если касание прервано (например, скроллом), отменяем удаление
+                clearTimeout(pressTimer);
+            });
+            
+            // --- КОНЕЦ ОБРАБОТЧИКОВ ---
 
             li.appendChild(taskText);
-            li.appendChild(deleteBtn);
+            // Кнопку удаления больше не добавляем
             taskList.appendChild(li);
         });
     }
 
-    // Функция добавления новой задачи
     function addTask() {
         const text = taskInput.value.trim();
         const category = taskCategory.value;
 
-        if (text === '') return; // Не добавляем пустые задачи
+        if (text === '') return;
 
         tasks.push({ text: text, completed: false, category: category });
         saveTasks();
         renderTasks();
-        taskInput.value = ''; // Очищаем поле ввода
+        taskInput.value = '';
     }
 
-    // Функция переключения статуса "выполнено"
     function toggleComplete(index) {
         tasks[index].completed = !tasks[index].completed;
         saveTasks();
         renderTasks();
     }
 
-    // Функция удаления задачи
     function deleteTask(index) {
-        tasks.splice(index, 1); // Удаляем 1 элемент по указанному индексу
-        saveTasks();
-        renderTasks();
+        // Добавляем подтверждение, чтобы избежать случайных удалений
+        if (confirm("Вы уверены, что хотите удалить эту задачу?")) {
+            tasks.splice(index, 1);
+            saveTasks();
+            renderTasks();
+        }
     }
 
-    // Обработчик кнопки "Добавить"
     addButton.addEventListener('click', addTask);
 
-    // Также можно добавить задачу по нажатию Enter в поле ввода
     taskInput.addEventListener('keypress', (e) => {
         if (e.key === 'Enter') {
             addTask();
         }
     });
 
-    // При первой загрузке страницы отображаем задачи из хранилища
     renderTasks();
 });

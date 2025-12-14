@@ -122,15 +122,3 @@ h1 {
     color: #777; 
 }
 
-.delete-btn {
-    background: #dc3545;
-    color: white;
-    border: none;
-    padding: 8px 12px; /* Увеличен размер кнопки для удобного нажатия */
-    border-radius: 4px;
-    cursor: pointer;
-    font-size: 14px;
-    font-family: 'DM Sans', sans-serif; 
-    /* Делаем кнопку удаления не сжимаемой */
-    flex-shrink: 0; 
-}
