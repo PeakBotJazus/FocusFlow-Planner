@@ -160,24 +160,46 @@ h1 {
     display: flex;
     gap: 10px;
     margin-bottom: 15px;
+    align-items: center; 
 }
 
-#newCategoryName {
-    flex-grow: 1;
-    padding: 10px;
-    background: #333;
-    border: 1px solid #555;
-    border-radius: 5px;
-    color: #fff;
-    font-family: 'DM Sans', sans-serif;
+/* ... (стили для #newCategoryName остаются прежними) ... */
+
+/* Стилизация красивой обертки для выбора цвета */
+.color-picker-wrapper {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%; 
+    overflow: hidden; 
+    border: 2px solid #555; 
+    cursor: pointer;
+    /* Цвет фона будет установлен динамически через JS */
+    background-color: #007bff; 
 }
 
 #newCategoryColor {
-    width: 40px; /* Фиксированный размер для выбора цвета */
-    padding: 0;
+    /* Скрываем стандартный внешний вид input type="color" */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    width: 100%; /* Теперь инпут занимает ровно 100% ширины обертки */
+    height: 100%; /* И 100% высоты */
     border: none;
+    padding: 0;
     cursor: pointer;
+    opacity: 0; /* Делаем сам инпут невидимым */
 }
+
+
+/* Убираем рамку фокуса, которая может появиться при клике */
+#newCategoryColor::-webkit-color-swatch-wrapper {
+    padding: 0;
+}
+
+#newCategoryColor::-webkit-color-swatch {
+    border: none;
+}
+
 
 #addCategoryBtn {
     background: #28a745;
@@ -192,22 +214,64 @@ h1 {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px;
+    padding: 12px 15px; /* Увеличен padding для красоты и удобства */
     background: #2c2c2c;
-    margin-bottom: 5px;
-    border-radius: 5px;
-    font-size: 14px;
+    margin-bottom: 8px; /* Увеличен отступ между элементами */
+    border-radius: 8px; /* Сделаны более мягкие углы */
+    font-size: 15px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2); /* Добавлена легкая тень */
 }
+
+/* Добавим класс для стилизации названия категории внутри li */
+.category-name-display {
+    display: flex;
+    align-items: center;
+    gap: 10px; /* Отступ между маркером и текстом */
+    font-weight: 700; /* Жирный шрифт (DM Sans 700 был подключен ранее) */
+    color: #fff; /* Яркий белый цвет текста */
+}
+
+.category-color-marker {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%; /* Круглый маркер цвета */
+    /* Цвет фона будет задан через JS */
+}
+
 .remove-category-btn {
     background: #dc3545;
     color: white;
     border: none;
-    padding: 5px 10px;
-    border-radius: 4px;
+    padding: 6px 12px; /* Увеличены размеры кнопки */
+    border-radius: 5px;
     cursor: pointer;
-    font-size: 12px;
+    font-size: 13px;
+    font-family: 'DM Sans', sans-serif;
+}
+#newCategoryName {
+    flex-grow: 1;
+    padding: 10px 15px; /* Увеличен горизонтальный padding */
+    background: #3a3a3a; /* Более мягкий темный фон */
+    border: 1px solid #555;
+    border-radius: 20px; /* Сильнее скругленные углы (форма "таблетки") */
+    color: #fff;
+    font-family: 'DM Sans', sans-serif;
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3); /* Внутренняя тень для глубины */
+    transition: border-color 0.3s, box-shadow 0.3s; /* Плавный переход при фокусе */
 }
 
+/* Добавляем красивый эффект при фокусировке (когда пользователь кликает на поле) */
+#newCategoryName:focus {
+    outline: none; /* Убираем стандартную синюю обводку браузера */
+    border-color: #007bff; /* Цвет рамки становится синим */
+    box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.3), 0 0 0 2px rgba(0, 123, 255, 0.5); /* Синяя внешняя тень */
+}
+
+/* Цвет плейсхолдера (текста внутри поля до ввода) */
+#newCategoryName::placeholder {
+    color: #999;
+    opacity: 1; /* Для совместимости с разными браузерами */
+}
 .modal-open {
     overflow: hidden; 
     height: 100vh; 

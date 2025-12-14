@@ -10,7 +10,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const newCategoryNameInput = document.getElementById('newCategoryName');
     const newCategoryColorInput = document.getElementById('newCategoryColor');
     const categoryListUl = document.getElementById('categoryList');
-
+    const colorPickerWrapper = document.querySelector('.color-picker-wrapper');
     const TASKS_STORAGE_KEY = 'focusFlowTasks';
     const CATEGORIES_STORAGE_KEY = 'focusFlowCategories';
     const LONG_PRESS_DURATION = 800;
@@ -34,6 +34,16 @@ document.addEventListener('DOMContentLoaded', () => {
         renderCategorySelect(); // Обновляем выпадающий список после сохранения
         renderCategoryManagementList(); // Обновляем список в модалке
     }
+    function updateColorWrapper() {
+        colorPickerWrapper.style.backgroundColor = newCategoryColorInput.value;
+    }
+
+    // Обработчик события input срабатывает, когда пользователь меняет цвет
+    newCategoryColorInput.addEventListener('input', updateColorWrapper);
+
+    // Также обновляем обертку при первой загрузке (учитывая value="#007bff" из HTML)
+    updateColorWrapper();
+
 
     // --- Функции для категорий ---
 
@@ -47,15 +57,38 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-    function renderCategoryManagementList() {
+       function renderCategoryManagementList() {
         categoryListUl.innerHTML = '';
         categories.forEach((category, index) => {
             const li = document.createElement('li');
-            li.innerHTML = `
-                <span style="color: ${category.color};">■</span>
-                ${category.name}
-                <button class="remove-category-btn" data-index="${index}">Удалить</button>
-            `;
+
+            // Создаем красивое отображение названия и цвета
+            const nameDisplay = document.createElement('span');
+            nameDisplay.classList.add('category-name-display');
+            
+            const colorMarker = document.createElement('span');
+            colorMarker.classList.add('category-color-marker');
+            colorMarker.style.backgroundColor = category.color; // Устанавливаем цвет
+
+            const nameText = document.createElement('span');
+            nameText.textContent = category.name;
+
+            nameDisplay.appendChild(colorMarker);
+            nameDisplay.appendChild(nameText);
+
+
+            // Кнопка удаления (остается прежней)
+            const removeBtn = document.createElement('button');
+            removeBtn.classList.add('remove-category-btn');
+            removeBtn.textContent = 'Удалить';
+            removeBtn.setAttribute('data-index', index);
+            removeBtn.addEventListener('click', (e) => {
+                const index = e.target.getAttribute('data-index');
+                removeCategory(index);
+            });
+            
+            li.appendChild(nameDisplay);
+            li.appendChild(removeBtn);
             categoryListUl.appendChild(li);
         });
 

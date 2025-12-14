@@ -31,13 +31,19 @@
     </div>
 
     <!-- Модальное окно управления категориями -->
-    <div id="categoryModal" class="modal">
+     <div id="categoryModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Управление категориями</h2>
             <div class="category-input-area">
                 <input type="text" id="newCategoryName" placeholder="Название категории...">
-                <input type="color" id="newCategoryColor" value="#ffffff">
+                
+                <!-- ОБНОВЛЕННЫЙ HTML ЗДЕСЬ -->
+                <div class="color-picker-wrapper">
+                    <input type="color" id="newCategoryColor" value="#007bff">
+                </div>
+                <!-- КОНЕЦ ОБНОВЛЕННОГО HTML -->
+                
                 <button id="addCategoryBtn">Добавить</button>
             </div>
             <ul id="categoryList">
