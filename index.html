@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ru">
 <head>
@@ -16,7 +17,12 @@
     <div class="container">
         <h1>FocusFlow Planner</h1>
         
-        <div class="input-area">
+        <!-- Контейнер для поиска, изначально скрыт -->
+        <div class="search-area" style="display: none;">
+            <input type="text" id="searchInput" placeholder="Быстрый поиск заметок...">
+        </div>
+        
+        <div class="input-area" id="mainInputArea">
             <input type="text" id="taskInput" placeholder="Введите новую задачу...">
             <select id="taskCategory">
                 <!-- Опции будут добавлены через JS -->
@@ -30,20 +36,16 @@
         </ul>
     </div>
 
-    <!-- Модальное окно управления категориями -->
-     <div id="categoryModal" class="modal">
+    <!-- Модальное окно управления категориями (остается прежним) -->
+    <div id="categoryModal" class="modal">
         <div class="modal-content">
             <span class="close">&times;</span>
             <h2>Управление категориями</h2>
             <div class="category-input-area">
                 <input type="text" id="newCategoryName" placeholder="Название категории...">
-                
-                <!-- ОБНОВЛЕННЫЙ HTML ЗДЕСЬ -->
                 <div class="color-picker-wrapper">
                     <input type="color" id="newCategoryColor" value="#007bff">
                 </div>
-                <!-- КОНЕЦ ОБНОВЛЕННОГО HTML -->
-                
                 <button id="addCategoryBtn">Добавить</button>
             </div>
             <ul id="categoryList">
@@ -51,6 +53,22 @@
             </ul>
         </div>
     </div>
+
+    <!-- Меню навигации внизу экрана (теперь 3 кнопки) -->
+    <nav class="bottom-menu">
+        <button id="homeBtn" class="menu-btn active">
+            <span>🏠</span>
+            <span>Заметки</span>
+        </button>
+        <button id="trashBtn" class="menu-btn">
+            <span>🗑️</span>
+            <span>Корзина</span>
+        </button>
+        <button id="searchBtn" class="menu-btn">
+            <span>🔎</span>
+            <span>Поиск</span>
+        </button>
+    </nav>
 
     <script src="script.js"></script>
 </body>

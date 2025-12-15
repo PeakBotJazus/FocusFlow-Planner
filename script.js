@@ -1,22 +1,30 @@
+
 document.addEventListener('DOMContentLoaded', () => {
-     const categoryModal = document.getElementById('categoryModal');
-    const closeModal = document.querySelector('.close');
     const taskInput = document.getElementById('taskInput');
     const taskCategorySelect = document.getElementById('taskCategory');
     const addButton = document.getElementById('addButton');
     const taskList = document.getElementById('taskList');
     const manageCategoriesBtn = document.getElementById('manageCategoriesBtn');
+    const categoryModal = document.getElementById('categoryModal');
+    const closeModal = document.querySelector('.close');
     const addCategoryBtn = document.getElementById('addCategoryBtn');
     const newCategoryNameInput = document.getElementById('newCategoryName');
     const newCategoryColorInput = document.getElementById('newCategoryColor');
     const categoryListUl = document.getElementById('categoryList');
     const colorPickerWrapper = document.querySelector('.color-picker-wrapper');
+    const homeBtn = document.getElementById('homeBtn');
+    const trashBtn = document.getElementById('trashBtn');
+    const searchBtn = document.getElementById('searchBtn');
+    const searchInput = document.getElementById('searchInput');
+    const searchArea = document.querySelector('.search-area');
+    const mainInputArea = document.getElementById('mainInputArea');
+
     const TASKS_STORAGE_KEY = 'focusFlowTasks';
     const CATEGORIES_STORAGE_KEY = 'focusFlowCategories';
     const LONG_PRESS_DURATION = 800;
 
+    // Инициализация данных
     let tasks = JSON.parse(localStorage.getItem(TASKS_STORAGE_KEY)) || [];
-    // Начальные категории по умолчанию
     let categories = JSON.parse(localStorage.getItem(CATEGORIES_STORAGE_KEY)) || [
         { id: 'personal', name: 'Личное', color: '#ff5733' },
         { id: 'work', name: 'Работа', color: '#007bff' },
@@ -24,29 +32,58 @@ document.addEventListener('DOMContentLoaded', () => {
     ];
 
     let pressTimer;
+    let currentView = 'home';
 
+    // Сохранение данных
     function saveTasks() {
         localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
     }
 
     function saveCategories() {
         localStorage.setItem(CATEGORIES_STORAGE_KEY, JSON.stringify(categories));
-        renderCategorySelect(); // Обновляем выпадающий список после сохранения
-        renderCategoryManagementList(); // Обновляем список в модалке
+        renderCategorySelect();
+        renderCategoryManagementList();
     }
+
+    // Обновление цвета в color picker
     function updateColorWrapper() {
-        colorPickerWrapper.style.backgroundColor = newCategoryColorInput.value;
+        if (colorPickerWrapper && newCategoryColorInput) {
+            colorPickerWrapper.style.backgroundColor = newCategoryColorInput.value;
+        }
     }
 
-    // Обработчик события input срабатывает, когда пользователь меняет цвет
-    newCategoryColorInput.addEventListener('input', updateColorWrapper);
+    // Навигация
+    function setActiveMenuButton(activeBtn) {
+        document.querySelectorAll('.menu-btn').forEach(btn => btn.classList.remove('active'));
+        activeBtn.classList.add('active');
+    }
 
-    // Также обновляем обертку при первой загрузке (учитывая value="#007bff" из HTML)
-    updateColorWrapper();
+    function navigateHome() {
+        currentView = 'home';
+        setActiveMenuButton(homeBtn);
+        mainInputArea.style.display = 'flex';
+        searchArea.style.display = 'none';
+        renderTasks();
+    }
 
+    function navigateTrash() {
+        currentView = 'trash';
+        setActiveMenuButton(trashBtn);
+        mainInputArea.style.display = 'none';
+        searchArea.style.display = 'none';
+        renderTasks();
+    }
 
-    // --- Функции для категорий ---
+    function navigateSearch() {
+        currentView = 'search';
+        setActiveMenuButton(searchBtn);
+        mainInputArea.style.display = 'none';
+        searchArea.style.display = 'block';
+        searchInput.focus();
+        renderTasks();
+    }
 
+    // Категории
     function renderCategorySelect() {
         taskCategorySelect.innerHTML = '';
         categories.forEach(category => {
@@ -57,18 +94,18 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
 
-       function renderCategoryManagementList() {
+    function renderCategoryManagementList() {
         categoryListUl.innerHTML = '';
         categories.forEach((category, index) => {
             const li = document.createElement('li');
 
-            // Создаем красивое отображение названия и цвета
-            const nameDisplay = document.createElement('span');
+
+const nameDisplay = document.createElement('span');
             nameDisplay.classList.add('category-name-display');
             
             const colorMarker = document.createElement('span');
             colorMarker.classList.add('category-color-marker');
-            colorMarker.style.backgroundColor = category.color; // Устанавливаем цвет
+            colorMarker.style.backgroundColor = category.color;
 
             const nameText = document.createElement('span');
             nameText.textContent = category.name;
@@ -76,8 +113,6 @@ document.addEventListener('DOMContentLoaded', () => {
             nameDisplay.appendChild(colorMarker);
             nameDisplay.appendChild(nameText);
 
-
-            // Кнопка удаления (остается прежней)
             const removeBtn = document.createElement('button');
             removeBtn.classList.add('remove-category-btn');
             removeBtn.textContent = 'Удалить';
@@ -86,18 +121,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 const index = e.target.getAttribute('data-index');
                 removeCategory(index);
             });
-            
+
             li.appendChild(nameDisplay);
             li.appendChild(removeBtn);
             categoryListUl.appendChild(li);
-        });
-
-        // Добавляем обработчики удаления для кнопок в списке управления
-        document.querySelectorAll('.remove-category-btn').forEach(button => {
-            button.addEventListener('click', (e) => {
-                const index = e.target.getAttribute('data-index');
-                removeCategory(index);
-            });
         });
     }
 
@@ -106,16 +133,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const color = newCategoryColorInput.value;
         if (name === '') return;
 
-        // Создаем уникальный ID
-        const id = name.toLowerCase().replace(/\s/g, '-'); 
-
+        const id = name.toLowerCase().replace(/\s/g, '-');
         categories.push({ id, name, color });
         saveCategories();
         newCategoryNameInput.value = '';
     }
 
     function removeCategory(index) {
-        // Простая защита от удаления категорий по умолчанию или если в них есть задачи
         const categoryId = categories[index].id;
         const tasksInCategory = tasks.some(task => task.category === categoryId);
 
@@ -125,64 +149,120 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (categories.length <= 1) {
-             alert('Должна быть хотя бы одна категория.');
-             return;
+            alert('Должна быть хотя бы одна категория.');
+            return;
         }
 
         categories.splice(index, 1);
         saveCategories();
     }
 
-    // --- Функции для задач (немного изменены) ---
-
+    // Задачи
     function renderTasks() {
         taskList.innerHTML = '';
-        tasks.forEach((task, index) => {
+
+        let tasksToRender = [];
+        if (currentView === 'home') {
+            tasksToRender = tasks.filter(task => !task.isDeleted);
+        } else if (currentView === 'trash') {
+            tasksToRender = tasks.filter(task => task.isDeleted);
+        } else if (currentView === 'search') {
+            const query = searchInput.value.toLowerCase();
+            tasksToRender = tasks.filter(task => task.text.toLowerCase().includes(query));
+        }
+
+        tasksToRender.forEach((task) => {
+            const originalIndex = tasks.indexOf(task);
+
             const li = document.createElement('li');
             li.classList.add('task-item');
-            if (task.completed) {
-                li.classList.add('completed');
-            }
+            if (task.completed) li.classList.add('completed');
 
-            // Находим цвет категории для задачи
             const category = categories.find(cat => cat.id === task.category);
-            if (category) {
-                li.style.borderLeftColor = category.color;
-            }
+            if (category) li.style.borderLeftColor = category.color;
 
             const taskText = document.createElement('span');
             taskText.classList.add('task-text');
             taskText.textContent = task.text;
-            taskText.addEventListener('click', () => toggleComplete(index));
+            
+            if (currentView === 'home' || currentView === 'search') {
+                taskText.addEventListener('click', () => toggleComplete(originalIndex));
+                taskText.addEventListener('dblclick', () => editTask(originalIndex, taskText));
+            }
 
             // Обработчики долгого нажатия
             li.addEventListener('contextmenu', (e) => {
                 e.preventDefault();
-                deleteTask(index);
+                if (currentView === 'home' || currentView === 'search') deleteTask(originalIndex);
+                if (currentView === 'trash') restoreTask(originalIndex);
             });
+            
             li.addEventListener('touchstart', (e) => {
+                e.preventDefault();
                 pressTimer = setTimeout(() => {
-                    deleteTask(index);
-                    if (navigator.vibrate) navigator.vibrate(50); 
+
+
+if (currentView === 'home' || currentView === 'search') deleteTask(originalIndex);
+                    if (currentView === 'trash') restoreTask(originalIndex);
+                    if (navigator.vibrate) navigator.vibrate(50);
                 }, LONG_PRESS_DURATION);
             });
+            
             li.addEventListener('touchend', () => clearTimeout(pressTimer));
             li.addEventListener('touchcancel', () => clearTimeout(pressTimer));
 
             li.appendChild(taskText);
             taskList.appendChild(li);
         });
+
+        // Сообщение если нет задач
+        if (tasksToRender.length === 0 && currentView !== 'search') {
+            const message = document.createElement('li');
+            message.classList.add('task-item');
+            message.style.justifyContent = 'center';
+            message.style.cursor = 'default';
+            if (currentView === 'home') message.textContent = 'У вас пока нет активных задач.';
+            if (currentView === 'trash') message.textContent = 'Корзина пуста.';
+            taskList.appendChild(message);
+        }
+    }
+
+    function editTask(index, taskTextElement) {
+        const input = document.createElement('input');
+        input.type = 'text';
+        input.value = tasks[index].text;
+        input.classList.add('edit-input');
+        
+        taskTextElement.parentNode.replaceChild(input, taskTextElement);
+        input.focus();
+
+        const saveEdit = () => {
+            tasks[index].text = input.value.trim();
+            if (tasks[index].text === '') {
+                deleteTask(index);
+            } else {
+                saveTasks();
+                renderTasks();
+            }
+        };
+
+        input.addEventListener('blur', saveEdit);
+        input.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') saveEdit();
+        });
     }
 
     function addTask() {
         const text = taskInput.value.trim();
         const categoryId = taskCategorySelect.value;
-
         if (text === '') return;
 
-        tasks.push({ text: text, completed: false, category: categoryId });
+        tasks.push({ text, completed: false, category: categoryId, isDeleted: false });
         saveTasks();
-        renderTasks();
+        
+        if (currentView !== 'home') navigateHome();
+        else renderTasks();
+        
         taskInput.value = '';
     }
 
@@ -193,45 +273,58 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function deleteTask(index) {
-        if (confirm("Вы уверены, что хотите удалить эту задачу?")) {
-            tasks.splice(index, 1);
+        if (confirm("Переместить задачу в корзину?")) {
+            tasks[index].isDeleted = true;
             saveTasks();
             renderTasks();
         }
     }
 
-    // --- Обработчики событий модального окна ---
+    function restoreTask(index) {
+        if (confirm("Восстановить задачу из корзины?")) {
+            tasks[index].isDeleted = false;
+            saveTasks();
+            renderTasks();
+        }
+    }
 
-     manageCategoriesBtn.addEventListener('click', () => {
+    // Обработчики событий
+    manageCategoriesBtn.addEventListener('click', () => {
         categoryModal.style.display = 'block';
-        document.body.classList.add('modal-open'); // Добавляем класс, запрещающий скролл
+        document.body.classList.add('modal-open');
         renderCategoryManagementList();
     });
 
     closeModal.addEventListener('click', () => {
         categoryModal.style.display = 'none';
-        document.body.classList.remove('modal-open'); // Удаляем класс, разрешаем скролл
+        document.body.classList.remove('modal-open');
         renderTasks();
     });
 
     window.addEventListener('click', (event) => {
         if (event.target === categoryModal) {
             categoryModal.style.display = 'none';
-            document.body.classList.remove('modal-open'); // Удаляем класс
+            document.body.classList.remove('modal-open');
             renderTasks();
         }
     });
 
     addCategoryBtn.addEventListener('click', addCategory);
-
     addButton.addEventListener('click', addTask);
+    
     taskInput.addEventListener('keypress', (e) => {
-        if (e.key === 'Enter') {
-            addTask();
-        }
+        if (e.key === 'Enter') addTask();
     });
+    
+    searchInput.addEventListener('input', renderTasks);
+    homeBtn.addEventListener('click', navigateHome);
+    trashBtn.addEventListener('click', navigateTrash);
+    searchBtn.addEventListener('click', navigateSearch);
 
-    // Инициализация при загрузке
+
+// Инициализация
+    newCategoryColorInput.addEventListener('input', updateColorWrapper);
+    updateColorWrapper();
     renderCategorySelect();
-    renderTasks();
+    navigateHome();
 });
