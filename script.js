@@ -33,6 +33,43 @@ document.addEventListener('DOMContentLoaded', () => {
 
     let pressTimer;
     let currentView = 'home';
+    let clearTrashBtn = null; // Кнопка очистки корзины
+
+    // Создаем кнопку очистки корзины
+    function createClearTrashButton() {
+        if (!clearTrashBtn) {
+            clearTrashBtn = document.createElement('button');
+            clearTrashBtn.id = 'clearTrashBtn';
+            clearTrashBtn.textContent = 'Очистить корзину';
+            clearTrashBtn.classList.add('clear-trash-btn');
+            clearTrashBtn.style.display = 'none';
+            
+            // Добавляем кнопку перед списком задач
+            taskList.parentNode.insertBefore(clearTrashBtn, taskList);
+            
+            // Обработчик клика на кнопку очистки корзины
+            clearTrashBtn.addEventListener('click', clearTrash);
+        }
+        return clearTrashBtn;
+    }
+
+    // Функция очистки корзины
+    function clearTrash() {
+        const deletedTasks = tasks.filter(task => task.isDeleted);
+        
+        if (deletedTasks.length === 0) {
+            alert('Корзина уже пуста!');
+            return;
+        }
+        
+        if (confirm("Вы уверены, что хотите полностью удалить все задачи из корзины. Это действие нельзя отменить.")){
+            // Оставляем только задачи, которые НЕ в корзине
+            tasks = tasks.filter(task => !task.isDeleted);
+            saveTasks();
+            renderTasks();
+            alert("Корзина очищена. Удалено задач.");
+        }
+    }
 
     // Сохранение данных
     function saveTasks() {
@@ -58,11 +95,13 @@ document.addEventListener('DOMContentLoaded', () => {
         activeBtn.classList.add('active');
     }
 
-    function navigateHome() {
+
+function navigateHome() {
         currentView = 'home';
         setActiveMenuButton(homeBtn);
         mainInputArea.style.display = 'flex';
         searchArea.style.display = 'none';
+        if (clearTrashBtn) clearTrashBtn.style.display = 'none';
         renderTasks();
     }
 
@@ -71,6 +110,11 @@ document.addEventListener('DOMContentLoaded', () => {
         setActiveMenuButton(trashBtn);
         mainInputArea.style.display = 'none';
         searchArea.style.display = 'none';
+        
+        // Показываем кнопку очистки корзины
+        const clearBtn = createClearTrashButton();
+        clearBtn.style.display = 'block';
+        
         renderTasks();
     }
 
@@ -80,6 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         mainInputArea.style.display = 'none';
         searchArea.style.display = 'block';
         searchInput.focus();
+        if (clearTrashBtn) clearTrashBtn.style.display = 'none';
         renderTasks();
     }
 
@@ -99,8 +144,7 @@ document.addEventListener('DOMContentLoaded', () => {
         categories.forEach((category, index) => {
             const li = document.createElement('li');
 
-
-const nameDisplay = document.createElement('span');
+            const nameDisplay = document.createElement('span');
             nameDisplay.classList.add('category-name-display');
             
             const colorMarker = document.createElement('span');
@@ -171,7 +215,8 @@ const nameDisplay = document.createElement('span');
             tasksToRender = tasks.filter(task => task.text.toLowerCase().includes(query));
         }
 
-        tasksToRender.forEach((task) => {
+
+tasksToRender.forEach((task) => {
             const originalIndex = tasks.indexOf(task);
 
             const li = document.createElement('li');
@@ -200,9 +245,7 @@ const nameDisplay = document.createElement('span');
             li.addEventListener('touchstart', (e) => {
                 e.preventDefault();
                 pressTimer = setTimeout(() => {
-
-
-if (currentView === 'home' || currentView === 'search') deleteTask(originalIndex);
+                    if (currentView === 'home' || currentView === 'search') deleteTask(originalIndex);
                     if (currentView === 'trash') restoreTask(originalIndex);
                     if (navigator.vibrate) navigator.vibrate(50);
                 }, LONG_PRESS_DURATION);
@@ -280,7 +323,8 @@ if (currentView === 'home' || currentView === 'search') deleteTask(originalIndex
         }
     }
 
-    function restoreTask(index) {
+
+function restoreTask(index) {
         if (confirm("Восстановить задачу из корзины?")) {
             tasks[index].isDeleted = false;
             saveTasks();
@@ -321,8 +365,7 @@ if (currentView === 'home' || currentView === 'search') deleteTask(originalIndex
     trashBtn.addEventListener('click', navigateTrash);
     searchBtn.addEventListener('click', navigateSearch);
 
-
-// Инициализация
+    // Инициализация
     newCategoryColorInput.addEventListener('input', updateColorWrapper);
     updateColorWrapper();
     renderCategorySelect();

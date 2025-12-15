@@ -346,3 +346,25 @@ h1 {
     font-family: 'DM Sans', sans-serif;
     box-sizing: border-box; /* Учитываем padding */
 }
+.clear-trash-btn {
+    display: block;
+    margin: 10px auto 20px;
+    padding: 10px 20px;
+    background-color: #ff4444;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    width: 90%;
+    max-width: 300px;
+}
+
+.clear-trash-btn:hover {
+    background-color: #cc0000;
+}
+
+.clear-trash-btn:active {
+    transform: scale(0.98);
+}
