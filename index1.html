@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="be">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Спадчына — Поўны Функцыянал</title>
+    <link href="https://fonts.googleapis.com" rel="stylesheet">
+    <style>
+        :root { --primary: #0f172a; --accent: #b91c1c; --bg: #f8fafc; --white: #ffffff; }
+        body { font-family: 'Montserrat', sans-serif; margin: 0; background-color: var(--bg); color: #1e293b; line-height: 1.6; }
+
+        /* АБНОЎЛЕНАЯ ШАПКА */
+        header {
+            background: var(--white); padding: 15px 40px; display: flex;
+            align-items: center; justify-content: space-between;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); position: sticky; top: 0; z-index: 1000;
+        }
+
+        .burger-menu { cursor: pointer; display: flex; flex-direction: column; gap: 6px; z-index: 1100; width: 30px; }
+        .burger-menu span { display: block; width: 28px; height: 3px; background: var(--primary); border-radius: 2px; }
+        
+        .logo { font-weight: 700; font-size: 22px; color: var(--primary); letter-spacing: 1px; text-align: center; flex-grow: 1; }
+
+        .map-link { 
+            font-weight: 700; 
+            font-size: 16px; 
+            color: var(--primary); 
+            text-decoration: none; 
+            cursor: pointer; 
+            transition: 0.3s;
+            width: 50px;
+            text-align: right;
+        }
+        .map-link:hover { color: var(--accent); }
+
+        /* БАКАВОЕ МЕНЮ */
+        .sidenav {
+            height: 100%; width: 0; position: fixed; z-index: 1200; top: 0; left: 0;
+            background-color: var(--primary); overflow-x: hidden; transition: 0.5s; padding-top: 60px;
+        }
+        .sidenav a { padding: 12px 35px; text-decoration: none; font-size: 16px; color: #94a3b8; display: block; transition: 0.3s; border-bottom: 1px solid rgba(255,255,255,0.05); }
+        .sidenav a:hover { color: var(--white); background: rgba(255,255,255,0.1); }
+        .sidenav .closebtn { position: absolute; top: 15px; right: 25px; font-size: 36px; color: white; cursor: pointer; }
+
+        .hero {
+            height: 40vh;
+            background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), 
+                        url('https://images.unsplash.com') center/cover fixed;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: white;
+        }
+
+        /* ПОШУК */
+        .search-wrapper { position: relative; width: 100%; max-width: 600px; margin-top: 20px; }
+        .search-input {
+            width: 100%; padding: 18px 30px; border-radius: 40px; border: 2px solid white;
+            background: rgba(255, 255, 255, 0.2); color: white; font-size: 18px; outline: none; backdrop-filter: blur(10px);
+        }
+        .search-input::placeholder { color: white; font-weight: 600; }
+
+        .search-dropdown {
+            position: absolute; top: 75px; left: 0; right: 0; background: white;
+            border-radius: 20px; max-height: 300px; overflow-y: auto; box-shadow: 0 10px 40px rgba(0,0,0,0.3); display: none; z-index: 1500;
+        }
+        .search-dropdown.show { display: block; }
+        .search-item { padding: 15px 25px; color: var(--primary); cursor: pointer; border-bottom: 1px solid #eee; text-align: left; font-weight: 600; }
+
+        /* АКНО ЛІТАРЫ */
+        .modal {
+            display: none; position: fixed; z-index: 2000; left: 0; top: 0;
+            width: 100%; height: 100%; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px);
+        }
+        .modal-content {
+            background: white; margin: 50px auto; width: 90%; max-width: 600px;
+            border-radius: 25px; padding: 40px; position: relative; animation: slideDown 0.4s ease;
+        }
+        @keyframes slideDown { from { transform: translateY(-30px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+        .close-modal { position: absolute; top: 20px; right: 25px; font-size: 30px; cursor: pointer; }
+        .letter-list { list-style: none; padding: 0; margin-top: 20px; }
+        .letter-list li { padding: 15px; border-bottom: 1px solid #eee; cursor: pointer; font-weight: 600; color: var(--primary); }
+
+        /* ВЫНІК (ТЭКСТАВАЯ КАРТКА) */
+        #resultSection { 
+            display: none; max-width: 900px; margin: 40px auto; 
+            background: white; border-radius: 30px; box-shadow: 0 20px 50px rgba(0,0,0,0.1); 
+            padding: 60px 70px;
+        }
+        .result-content h2 { font-family: 'Playfair Display', serif; font-size: 46px; margin: 0 0 10px 0; color: var(--primary); }
+        .info-subtitle { color: var(--accent); text-transform: uppercase; font-size: 14px; font-weight: 700; letter-spacing: 2px; margin-bottom: 30px; display: block; }
+        .info-text { font-size: 19px; color: #475569; margin-bottom: 40px; text-align: justify; }
+        .fact-box { background: #fff8f8; border-left: 5px solid var(--accent); padding: 30px; border-radius: 0 15px 15px 0; }
+        .fact-box strong { color: var(--accent); display: block; font-size: 20px; margin-bottom: 8px; }
+
+        .main-container { max-width: 1200px; margin: 60px auto; padding: 0 25px; text-align: center; }
+        .recent-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 25px; }
+        .card { background: white; padding: 30px; border-radius: 15px; box-shadow: 0 10px 20px rgba(0,0,0,0.03); cursor: pointer; text-align: left; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="burger-menu" onclick="openNav()"><span></span><span></span><span></span></div>
+        <div class="logo">СПАДЧЫНА</div>
+        <div class="map-link" onclick="alert('Мапа ў стадыі распрацоўкі')">Мапа</div>
+    </header>
+
+    <div id="mySidenav" class="sidenav">
+        <span class="closebtn" onclick="closeNav()">&times;</span>
+        <h3 style="color: white; padding: 0 35px; font-family: 'Playfair Display';">Алфавіт</h3>
+        <div id="alphabet-links"></div>
+    </div>
+
+    <section class="hero">
+        <h1 style="font-family: 'Playfair Display'; font-size: 48px;">Пошук спадчыны</h1>
+        <div class="search-wrapper">
+            <input type="text" class="search-input" id="mainSearch" autocomplete="off" placeholder="Увядзіце назву помніка...">
+            <div id="searchDropdown" class="search-dropdown"></div>
+        </div>
+    </section>
+
+    <div id="letterModal" class="modal">
+        <div class="modal-content">
+            <span class="close-modal" onclick="closeLetterModal()">&times;</span>
+            <h2 id="letterTitle" style="font-family: 'Playfair Display';"></h2>
+            <ul id="letterItems" class="letter-list"></ul>
+        </div>
+    </div>
+
+    <section id="resultSection">
+        <div class="result-content">
+            <h2 id="resTitle"></h2>
+            <span class="info-subtitle">Гісторыя і архітэктура</span>
+            <p id="resDesc" class="info-text"></p>
+            <div class="fact-box">
+                <strong>Цікавы факт:</strong>
+                <p id="resFact"></p>
+            </div>
+        </div>
+    </section>
+
+    <main class="main-container">
+        <h2>Нядаўнія запыты</h2>
+        <div class="recent-grid" id="recentContainer"></div>
+    </main>
+
+    <script>
+        const monumentsData = {
+            'А': ['Аўгустоўскі канал', 'Акадэмія навук', 'Ашмянскі касцёл'],
+            'Б': ['Брэсцкая крэпасць', 'Барысаглебская царква', 'Бярэзінскі запаведнік'],
+            'В': ['Віцебская ратуша', 'Вялейскае вадасховішча', 'Валожынскі палац'],
+            'Г': ['Гальшанскі замак', 'Гродзенскі Стары замак', 'Гомельскі палац'],
+            'К': ['Камянецкая вежа', 'Каложская царква', 'Косаўскі палац'],
+            'Л': ['Лідскі замак', 'Лошыцкая сядзіба', 'Любчанскі замак'],
+            'М': ['Мірскі замак', 'Мінская ратуша', 'Мураванкаўская царква'],
+            'Н': ['Нясвіжскі замак', 'Навагрудскі замак', 'Нацыянальная бібліятэка'],
+            'П': ['Полацкі Сафійскі сабор', 'Пінскі езуіцкі калегіум'],
+            'Р': ['Ружанскі палац', 'Ракаўскі касцёл'],
+            'С': ['Сынковіцкая царква', 'Слонімская сінагога'],
+            'Т': ['Траецкае прадмесце', 'Троіцкі касцёл'],
+            'Я': ['Янаўскі касцёл', 'Язненская царква', 'Ярэміцкая царква']
+        };
+
+        const descriptions = {
+            'Каложская царква': 'Гэта ўнікальны помнік XII стагоддзя ў Гродне. Сцены ўпрыгожаны каляровымі валунамі і маёлікавымі пліткамі, якія выкладзены ў форме крыжоў. Гэта стварае эфект "каменнай вышыўкі". Унутры сцен замураваны сотні збаноў-галаснікаў для стварэння неверагоднай акустыкі.',
+            'Нясвіжскі замак': 'Рэзідэнцыя Радзівілаў XVI стагоддзя. Унікальны ўзор беларускага барока, занесены ў спіс ЮНЕСКА.',
+            'Мірскі замак': 'Унікальны помнік беларускай готыкі XVI ст. Мае 5 велічных вежаў.'
+        };
+
+        const facts = {
+            'Каложская царква': 'У сцены храма ўмураваны сотні керамічных збаноў (галаснікаў) для неверагоднай акустыкі.',
+            'Нясвіжскі замак': 'Паводле легенд, у падзямеллях схаваны 12 залатых апосталаў.',
+            'Мірскі замак': 'На адной са сцен замуравана каменная галава барана — абярэг будынка.'
+        };
+
+        function showInfo(name) {
+            document.getElementById('resultSection').style.display = "block";
+            document.getElementById('resTitle').innerText = name;
+            document.getElementById('resDesc').innerText = descriptions[name] || `Гістарычны помнік "${name}" з'яўляецца важнай часткай спадчыны Беларусі.`;
+            document.getElementById('resFact').innerText = facts[name] || 'Гэтае месца тоіць у сабе шмат гістарычных таямніц.';
+            document.getElementById('resultSection').scrollIntoView({ behavior: 'smooth' });
+            closeLetterModal();
+            document.getElementById('searchDropdown').classList.remove('show');
+            saveRecent(name);
+        }
+
+        const mainSearch = document.getElementById('mainSearch');
+        const searchDropdown = document.getElementById('searchDropdown');
+
+        mainSearch.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase();
+            searchDropdown.innerHTML = '';
+            if (!query) { searchDropdown.classList.remove('show'); return; }
+            const allMonuments = Object.values(monumentsData).flat();
+            const matches = allMonuments.filter(m => m.toLowerCase().includes(query));
+            if (matches.length > 0) {
+                searchDropdown.classList.add('show');
+                matches.forEach(name => {
+                    const div = document.createElement('div');
+                    div.className = 'search-item';
+                    div.innerText = name;
+                    div.onclick = () => { mainSearch.value = name; showInfo(name); };
+                    searchDropdown.appendChild(div);
+                });
+            } else { searchDropdown.classList.remove('show'); }
+        });
+
+        function openLetterWindow(letter) {
+            const list = document.getElementById('letterItems');
+            document.getElementById('letterTitle').innerText = `Помнікі на літару "${letter}"`;
+            list.innerHTML = '';
+            (monumentsData[letter] || []).forEach(name => {
+                const li = document.createElement('li');
+                li.innerText = name;
+                li.onclick = () => showInfo(name);
+                list.appendChild(li);
+            });
+            document.getElementById('letterModal').style.display = "block";
+            closeNav();
+        }
+
+        const alphContainer = document.getElementById('alphabet-links');
+        Object.keys(monumentsData).forEach(letter => {
+            const a = document.createElement('a'); a.href = "#"; a.innerText = letter;
+            a.onclick = (e) => { e.preventDefault(); openLetterWindow(letter); };
+            alphContainer.appendChild(a);
+        });
+
+        function saveRecent(name) {
+            let list = JSON.parse(localStorage.getItem('bel_map_final')) || [];
+            list = [name, ...list.filter(n => n !== name)].slice(0, 6);
+            localStorage.setItem('bel_map_final', JSON.stringify(list));
+            renderRecent();
+        }
+
+        function renderRecent() {
+            const list = JSON.parse(localStorage.getItem('bel_map_final')) || ['Каложская царква', 'Нясвіжскі замак'];
+            const container = document.getElementById('recentContainer');
+            container.innerHTML = '';
+            list.forEach(name => {
+                const card = document.createElement('div');
+                card.className = 'card';
+                card.innerHTML = `<h3>${name}</h3><p>Націсніце для гісторыі</p>`;
+                card.onclick = () => showInfo(name);
+                container.appendChild(card);
+            });
+        }
+
+        function openNav() { document.getElementById("mySidenav").style.width = "300px"; }
+        function closeNav() { document.getElementById("mySidenav").style.width = "0"; }
+        function closeLetterModal() { document.getElementById('letterModal').style.display = "none"; }
+        window.onclick = (e) => { 
+            if(e.target == document.getElementById('letterModal')) closeLetterModal();
+            if(!e.target.matches('.search-input')) searchDropdown.classList.remove('show');
+        }
+        renderRecent();
+    </script>
+</body>
+</html>
